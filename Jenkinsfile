@@ -37,6 +37,11 @@ pipeline {
                 """
             }
         }
+        stage('Vulnerability Scan - Docker ') {
+            steps {
+              sh "docker run  -v /var/run/docker.sock:/var/run/docker.sock aquasec/trivy image --severity=critical ${HOSTDOCKERHUB}/${IMAGE_NAME}:${IMAGE_TAG}"
+            }
+        }
 
         stage('Deploy Image') {
           steps {
