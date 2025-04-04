@@ -19,5 +19,11 @@ pipeline {
                 """
             }
         }
+
+        stage('Test Docker Image') {
+            steps {
+            sh "docker run ${IMAGE_NAME}:${IMAGE_TAG} npm test"
+          }
+        }
     }
 }
