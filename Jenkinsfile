@@ -35,5 +35,14 @@ pipeline {
                 """
             }
         }
+
+        stage('Push Docker Image to Docker Hub') {
+            steps {
+                echo "Push Docker image to Docker Hub"
+                sh """
+                docker push ${HOSTDOCKERHUB}/${IMAGE_NAME}:${IMAGE_TAG}
+                """
+            }
+        }
     }
 }
