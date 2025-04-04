@@ -20,20 +20,4 @@ pipeline {
             }
         }
     }
-    
-    post {
-        always {
-            echo "Cleaning up local Docker images..."
-            sh """
-            docker rmi ${IMAGE_NAME}:${IMAGE_TAG} || true
-            docker rmi ${NEXUS_HOST}/${NEXUS_REPO}/${IMAGE_NAME}:${IMAGE_TAG} || true
-            """
-        }
-        success {
-            echo "Pipeline completed successfully!"
-        }
-        failure {
-            echo "Pipeline failed. Check the logs for details."
-        }
-    }
 }
