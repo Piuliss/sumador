@@ -6,7 +6,9 @@ pipeline {
     }
 
     environment {
-        IMAGE_NAME = "sumador" // Nombre de la imagen Docker
+        CREDENTIALS_ID = 'f0142294-69d8-4e13-9215-33104e705eb6' 
+        NEXUS_URL = "http://localhost:8083"
+        IMAGE_NAME = "sumador_fiuni" // Nombre de la imagen Docker
         IMAGE_TAG = "${env.BUILD_NUMBER}" // Etiqueta de la imagen basada en el número de build
         HOSTDOCKERHUB = "honeyjack"
     }
@@ -36,13 +38,18 @@ pipeline {
             }
         }
 
-        stage('Push Docker Image to Docker Hub') {
-            steps {
-                echo "Push Docker image to Docker Hub"
-                sh """
-                docker push ${HOSTDOCKERHUB}/${IMAGE_NAME}:${IMAGE_TAG}
-                """
+        stage('Deploy Image') {
+          steps {
+            withCredentials([usernamePassword(credentialsId: CREDENTIALS_ID, usernameVariable: 'NEXUS_USERNAME', passwordVariable: 'NEXUS_PASSWORD')]) {
+                script {
+                  docker.withRegistry("${NEXUS_URL}", "${CREDENTIALS_ID}") {
+                    def imageName = "${IMAGE_NAME}:${IMAGE_TAG}"
+                    def dockerImage = docker.build(imageName, '.')
+                    dockerImage.push()
+                  }
+                }
             }
+          }
         }
     }
 }
